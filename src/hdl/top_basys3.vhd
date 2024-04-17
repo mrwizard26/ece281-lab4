@@ -132,6 +132,7 @@ architecture top_basys3_arch of top_basys3 is
     );
     end component clock_divider;
     
+    signal w_btn : std_logic;
     signal w_clk1 : std_logic;
     signal w_clk2 : std_logic;
     signal w_floor : std_logic_vector (3 downto 0);
@@ -146,7 +147,7 @@ begin
     TDM4_inst: TDM4
     port map(
     i_clk => w_clk2,
-    i_reset => btnU,
+    i_reset => '0',
     i_D3 => w_tens,
     i_D2 => w_ones,
     i_D1 => x"0",
@@ -162,7 +163,7 @@ begin
     elevator_controller_fsm_inst: elevator_controller_fsm
     port map(
     i_clk => w_clk1,
-    i_reset => btnR or btnU,
+    i_reset => w_btn,
     i_stop => sw(0),
     i_up_down => sw(1),
     o_floor => w_floor
@@ -178,7 +179,7 @@ begin
     generic map ( k_DIV => 25000000 ) -- 2 Hz clock from 100 MHz
     port map (                          
       i_clk   => clk,
-      i_reset => btnL or btnU,
+      i_reset => w_btn,
       o_clk   => w_clk1
     );  
     
@@ -191,7 +192,7 @@ begin
     );  
 	
 	-- CONCURRENT STATEMENTS ----------------------------
-	
+	w_btn <= btnR or btnU;
 	w_tens <= x"1" when (w_floor > x"9") else
 	          x"1" when (w_floor = x"0") else
 	          x"0";	
